@@ -6,7 +6,9 @@ export default function AgeVerification() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (!localStorage.getItem('ageVerified')) {
+        const isVerified = localStorage.getItem('ageVerified');
+        if (!isVerified) {
+            // eslint-disable-next-line
             setIsVisible(true);
             document.body.style.overflow = 'hidden';
         }
@@ -25,33 +27,56 @@ export default function AgeVerification() {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-[#0a0a0c]/95 backdrop-blur-2xl flex items-center justify-center transition-all duration-500">
-            <div className="relative bg-[#111114] bg-opacity-95 backdrop-blur-xl p-8 md:p-12 rounded-[23px] max-w-md w-full text-center border border-white/5 mx-4">
-                <div className="flex items-center justify-center gap-3 mb-8">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-                        <Play className="text-white fill-white w-6 h-6" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-300">
+            {/* Modal Container */}
+            <div className="relative w-full max-w-md p-8 mx-4 overflow-hidden text-center bg-[#0f0f13] border border-white/10 rounded-2xl shadow-2xl animate-in zoom-in-95 duration-300">
+                
+                {/* Background Glow Effect */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4/5 h-32 bg-cyan-500/10 blur-[100px] pointer-events-none"></div>
+
+                {/* Brand / Logo */}
+                <div className="flex items-center justify-center gap-3 mb-6">
+                    <div className="flex items-center justify-center w-10 h-10 shadow-lg bg-gradient-to-br from-cyan-500 to-cyan-400 rounded-xl shadow-cyan-500/20">
+                        <Play className="w-5 h-5 text-white fill-white" />
                     </div>
-                    <span className="text-3xl font-black tracking-tighter text-cyan-500 uppercase">
+                    <span className="text-2xl font-black tracking-tighter uppercase text-cyan-500">
                         SHADOW<span className="text-white">CLIPS</span>
                     </span>
                 </div>
                 
-                <div className="inline-flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-full mb-6">
+                {/* Warning Badge */}
+                <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 mb-6 border rounded-full bg-red-500/10 border-red-500/20">
                     <ShieldAlert className="w-4 h-4 text-red-500" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">Akses Terbatas</span>
+                    <span className="text-xs font-bold tracking-widest text-red-500 uppercase">Akses Dibatasi</span>
                 </div>
                 
-                <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight mb-4">Verifikasi <span className="text-cyan-500">Umur</span></h2>
-                <p className="text-slate-400 text-sm mb-8 leading-relaxed font-medium">
-                    Situs ini mungkin berisi konten dewasa. Anda harus berusia minimal <span className="bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded font-black">18 TAHUN</span> untuk melanjutkan.
+                {/* Text Content */}
+                <h2 className="mb-3 text-2xl font-bold tracking-tight text-white">
+                    Verifikasi Umur
+                </h2>
+                <p className="mb-8 text-sm leading-relaxed text-gray-400">
+                    Situs ini mungkin berisi konten dewasa. Anda harus berusia minimal{' '}
+                    <span className="px-2 py-0.5 font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded">
+                        18 TAHUN
+                    </span>{' '}
+                    untuk dapat melanjutkan.
                 </p>
                 
+                {/* Action Buttons */}
                 <div className="flex flex-col gap-3">
-                    <button onClick={handleYes} className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center justify-center gap-2">
-                        <CheckCircle2 className="w-5 h-5" /> Ya, Saya 18+
+                    <button 
+                        onClick={handleYes} 
+                        className="flex items-center justify-center w-full gap-2 py-3.5 text-sm font-bold tracking-wide text-black uppercase transition-all bg-cyan-500 rounded-xl hover:bg-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                    >
+                        <CheckCircle2 className="w-5 h-5" /> 
+                        Ya, Saya 18+
                     </button>
-                    <button onClick={handleNo} className="w-full bg-[#0a0a0c] hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 text-slate-500 hover:text-red-500 font-bold uppercase tracking-widest py-4 rounded-xl transition-all flex items-center justify-center gap-2">
-                        <X className="w-4 h-4" /> Tidak, Keluar
+                    <button 
+                        onClick={handleNo} 
+                        className="flex items-center justify-center w-full gap-2 py-3.5 text-sm font-bold tracking-wide text-gray-500 uppercase transition-all bg-transparent border border-white/10 rounded-xl hover:bg-white/5 hover:text-white"
+                    >
+                        <X className="w-4 h-4" /> 
+                        Tidak, Keluar
                     </button>
                 </div>
             </div>
