@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { Play, Eye, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
