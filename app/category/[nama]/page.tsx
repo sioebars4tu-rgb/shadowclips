@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { Play, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
+// PERBAIKAN: Type Props diperbarui agar murni Promise sesuai aturan strict Next.js terbaru
 type Props = {
-    params: Promise<{ nama: string }> | { nama: string };
-    searchParams?: Promise<{ page?: string }> | { page?: string };
+    params: Promise<{ nama: string }>;
+    searchParams: Promise<{ page?: string }>;
 };
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -20,12 +21,14 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function CategoryResultPage(props: Props) {
     const params = await props.params;
-    const searchParams = props.searchParams ? await props.searchParams : {};
+    // PERBAIKAN: Langsung await searchParams tanpa ternary operator
+    const searchParams = await props.searchParams;
     
     const nama = params.nama;
     const decodedKategori = decodeURIComponent(nama);
 
-    const pageQuery = searchParams.page;
+    // PERBAIKAN: Menggunakan optional chaining (?.) untuk menghindari error saat build statis
+    const pageQuery = searchParams?.page;
     const currentPage = Math.max(1, parseInt(pageQuery || '1', 10));
     const ITEMS_PER_PAGE = 16; 
     
@@ -47,7 +50,6 @@ export default async function CategoryResultPage(props: Props) {
         const maxVisible = 5;
         let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
         
-        // PERBAIKAN: Menggunakan const karena nilai 'end' tidak pernah di-reassign
         const end = Math.min(totalPages, start + maxVisible - 1);
 
         if (end - start + 1 < maxVisible) {
