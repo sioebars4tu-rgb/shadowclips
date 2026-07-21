@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Play, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
-// PERBAIKAN: Type Props diperbarui agar murni Promise sesuai aturan strict Next.js terbaru
+// PERBAIKAN FINAL: Tipe data disamakan persis dengan standar bawaan Next.js (PageProps)
 type Props = {
     params: Promise<{ nama: string }>;
-    searchParams: Promise<{ page?: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -21,17 +21,17 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export default async function CategoryResultPage(props: Props) {
     const params = await props.params;
-    // PERBAIKAN: Langsung await searchParams tanpa ternary operator
     const searchParams = await props.searchParams;
     
     const nama = params.nama;
     const decodedKategori = decodeURIComponent(nama);
 
-    // PERBAIKAN: Menggunakan optional chaining (?.) untuk menghindari error saat build statis
+    // PERBAIKAN: Memastikan pageQuery selalu dibaca sebagai string, mengantisipasi array
     const pageQuery = searchParams?.page;
-    const currentPage = Math.max(1, parseInt(pageQuery || '1', 10));
-    const ITEMS_PER_PAGE = 16; 
+    const pageString = Array.isArray(pageQuery) ? pageQuery[0] : pageQuery;
+    const currentPage = Math.max(1, parseInt(pageString || '1', 10));
     
+    const ITEMS_PER_PAGE = 16; 
     const from = (currentPage - 1) * ITEMS_PER_PAGE;
     const to = from + ITEMS_PER_PAGE - 1;
 
