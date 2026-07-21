@@ -5,29 +5,33 @@ import Link from 'next/link';
 import { Play, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 
-// PERBAIKAN FINAL: Tipe data disamakan persis dengan standar bawaan Next.js (PageProps)
-type Props = {
-    params: Promise<{ nama: string }>;
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+// PERBAIKAN FINAL (Benar-benar mengatasi type error):
+// Menggunakan cara penulisan generic type yang diizinkan oleh Next.js 15
+type Params = Promise<{ nama: string }>;
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
-    const params = await props.params;
-    const decodedKategori = decodeURIComponent(params.nama);
+// Pisahkan interface agar tidak terjadi konflik constraint dengan 'PageProps' Next.js
+interface PageProps {
+    params: Params;
+    searchParams: SearchParams;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const resolvedParams = await params;
+    const decodedKategori = decodeURIComponent(resolvedParams.nama);
     return {
         title: `Kategori: ${decodedKategori} - ShadowClips`,
     };
 }
 
-export default async function CategoryResultPage(props: Props) {
-    const params = await props.params;
-    const searchParams = await props.searchParams;
+export default async function CategoryResultPage({ params, searchParams }: PageProps) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = await searchParams;
     
-    const nama = params.nama;
+    const nama = resolvedParams.nama;
     const decodedKategori = decodeURIComponent(nama);
 
-    // PERBAIKAN: Memastikan pageQuery selalu dibaca sebagai string, mengantisipasi array
-    const pageQuery = searchParams?.page;
+    const pageQuery = resolvedSearchParams?.page;
     const pageString = Array.isArray(pageQuery) ? pageQuery[0] : pageQuery;
     const currentPage = Math.max(1, parseInt(pageString || '1', 10));
     
