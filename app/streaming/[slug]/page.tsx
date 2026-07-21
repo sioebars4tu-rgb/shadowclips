@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { supabase } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import { Download, Eye, Sparkles, Files, Server, HardDrive, DownloadCloud } from 'lucide-react';
@@ -33,7 +34,10 @@ export default async function StreamingPage({ params }: Props) {
     const { slug } = await params;
     const identifier = slug;
 
-    let { data: video, error } = await supabase.from('videos').select('*').eq('slug', identifier).single();
+    // PERBAIKAN 1: Memisahkan deklarasi agar 'error' menjadi const, dan 'video' tetap let
+    const response = await supabase.from('videos').select('*').eq('slug', identifier).single();
+    let video = response.data;
+    const error = response.error;
     
     if (error || !video) {
         const { data: videoById, error: errorId } = await supabase.from('videos').select('*').eq('id', identifier).single();
@@ -43,7 +47,9 @@ export default async function StreamingPage({ params }: Props) {
 
     try {
         await supabase.rpc('increment_views', { row_id: video.id });
-    } catch (e) {}
+    } catch {
+        // PERBAIKAN 2: Menghapus variabel 'e' yang tidak pernah digunakan
+    }
 
     const isGalleryLabel = video.labels && String(video.labels).toLowerCase().includes('gallery');
     const allImages = video.img ? video.img.split(',').map((url: string) => url.trim()).filter(Boolean) : [];
@@ -88,6 +94,7 @@ export default async function StreamingPage({ params }: Props) {
                         <div className="w-full p-6 md:p-8 bg-[#0a0a0c] min-h-[400px]">
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                                 {allImages.slice(1).map((imgUrl: string, idx: number) => (
+                                    // PERBAIKAN 3: Tag <img> sudah aman karena ada eslint-disable di baris 1
                                     <div key={idx} className="relative aspect-[3/4] rounded-xl overflow-hidden border border-white/5 shadow-2xl bg-[#111114]">
                                         <img src={imgUrl} className="w-full h-full object-cover" alt={`Gallery ${idx}`} loading="lazy" />
                                     </div>
@@ -189,6 +196,7 @@ export default async function StreamingPage({ params }: Props) {
                                 return (
                                     <Link href={`/streaming/${rel.slug || rel.id}`} key={rel.id} className="group cursor-pointer">
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-3 border border-white/5 bg-[#111114]">
+                                            {/* PERBAIKAN 3: Tag <img> aman dari warning */}
                                             <img src={thumbImage} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all group-hover:scale-105" alt={rel.title} />
                                             <div className="absolute top-2 left-2 bg-cyan-500 text-black px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest">{rel.category || 'Video'}</div>
                                         </div>
