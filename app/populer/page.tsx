@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { TrendingUp, Play } from 'lucide-react';
